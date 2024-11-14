@@ -1,4 +1,25 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
+  let form = document.getElementById('generation-form');
+
+  function handleFormSubmit(e) {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const token = document.querySelector('meta[name="csrf-token"]').content;
+    form.reset();
+    sendPrompt(formData, token);
+  }
+
+  function sendPrompt(formData, token) {
+    fetch(form.action, {
+      method: 'POST',
+      headers:{
+        'Accept': 'application/json',
+        'X-CSRF-Token': token
+      },
+      body: formData
+    });
+  }
+
   // 各要素を取得
   let threadTitle = document.getElementById('thread-title');
   let chatContainer = document.getElementById('chat-container');
