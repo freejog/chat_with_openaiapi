@@ -1,12 +1,27 @@
+require 'http'
+
 class MessagesController < ApplicationController
   def index
+    @messages = Message.all
     @message = Message.new
   end
 
   def create
     @message = Message.new(message_params)
-    binding.pry
-    openai_api_call(@message.prompt)
+    response = openai_api_call(@message.prompt)
+
+    if response.status.success?
+      response_body = JSON.parse(response.body) #JSON→Rubyにパース
+      @message.response = response_body['choices'][0]['message']['content']
+
+      if @message.save
+        render json: { response: @message.response }
+      else
+        render json: { error: @message.errors.full_messages.join(', ') }, status: :unprocessable_entity
+      end
+    else
+      render json: { error: 'APIリクエストが失敗しました' }, status: :unprocessable_entity
+    end
   end
 
   private
@@ -21,11 +36,12 @@ class MessagesController < ApplicationController
       headers: {
         'Content-Type' => 'application/json',
         'Accept' => 'application/json',
-        'Autorization' => "Bearer #{ENV['OPENAI_API_KEY']}"
+        'Authorization' => "Bearer #{ENV['OPENAI_API_KEY']}"
       },
       json: {
-        model: "gpt-4o",
-        messages: [{ role: "user", content: prompt }]
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 100
       }
     )
   end
