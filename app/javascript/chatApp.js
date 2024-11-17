@@ -1,15 +1,35 @@
 document.addEventListener('DOMContentLoaded', function() {
   let form = document.getElementById('generation-form');
+  let messagesList = document.getElementById('messages-list');
 
   function handleFormSubmit(e) {
     e.preventDefault();
     const formData = new FormData(form);
     const token = document.querySelector('meta[name="csrf-token"]').content;
+    const promptContent = form.querySelector('textarea').value;
+    const targetElement = appendMessageElement(promptContent);
     form.reset();
-    sendPrompt(formData, token);
+    sendPrompt(formData, token, targetElement);
   }
 
-  function sendPrompt(formData, token) {
+  function appendMessageElement(promptContent){
+    const messageElement = document.createElement('div');
+    messageElement.innerHTML = `
+      <div class="prompt-box">
+        <p class="prompt">You:</p>
+        <p class="prompt-text">${formatText(promptContent)}</p>
+      </div>
+      <div class="response-box">
+        <p class="response">GPT:</p>
+        <p class="response-text"></p>
+      </div>
+    `;
+    messagesList.appendChild(messageElement);
+    scrollToBottom();
+    return messageElement.querySelector('.response-text');
+  }
+
+  function sendPrompt(formData, token, targetElement) {
     fetch(form.action, {
       method: 'POST',
       headers:{
@@ -17,6 +37,10 @@ document.addEventListener('DOMContentLoaded', function() {
         'X-CSRF-Token': token
       },
       body: formData
+    })
+    .then(response => response.json());
+    .then(data => {
+      displayResponse(data.response, targetElement);
     });
   }
 
