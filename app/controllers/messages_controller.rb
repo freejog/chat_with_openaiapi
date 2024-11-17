@@ -9,10 +9,19 @@ class MessagesController < ApplicationController
   def create
     @message = Message.new(message_params)
     response = openai_api_call(@message.prompt)
-    response_body = JSON.parse(response.body) #JSON→Rubyにパース
-    @message.response = response_body['choices'][0]['message']['content']
-    @message.save
-    render json: { response: @message.response }
+
+    if response.status.success?
+      response_body = JSON.parse(response.body) #JSON→Rubyにパース
+      @message.response = response_body['choices'][0]['message']['content']
+
+      if @message.save
+        render json: { response: @message.response }
+      else
+        render json: { error: @message.errors.full_messages.join(', ') }, status: :unprocessable_entity
+      end
+    else
+      render json: { error: 'APIリクエストが失敗しました' }, status: :unprocessable_entity
+    end
   end
 
   private

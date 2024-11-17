@@ -1,7 +1,7 @@
 <div id="chat-container">
   <div id="messages-list">
     <% if @messages.present? %>
-      <% messages.each do |message| %>
+      <% @messages.each do |message| %>
         <% if message.prompt.present? && message.response.present? %>
           <div class="prompt-box">
             <p class="prompt">You:</p>

@@ -33,15 +33,16 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch(form.action, {
       method: 'POST',
       headers:{
-        'Accept': 'application/json',
+        'Accept' : 'application/json',
         'X-CSRF-Token': token
       },
       body: formData
     })
-    .then(response => response.json());
+    .then(response => response.json())
     .then(data => {
       displayResponse(data.response, targetElement);
-    });
+    })
+    .catch(error => handleAPIError(error, targetElement));
   }
 
   // 各要素を取得
