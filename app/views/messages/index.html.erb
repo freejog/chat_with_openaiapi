@@ -21,7 +21,7 @@
   </div>
 </div>
 
-<%= form_with(model: @message, id: 'generation-form') do |form| %>
+<%= form_with(id: 'generation-form') do |form| %>
   <div class="textarea-with-submit-inside">
     <%= form.text_area :prompt, class: "rounded-corners" %>
     <%= form.submit '↑', class: "submit-within-textarea rounded-corners" %>

@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
   root "messages#index"
-  resources :messages, only: [:index, :create]
+  resources :chat_threads, only: [:create] do
+    resources :messages, only: [:index, :create]
+  end
 end
