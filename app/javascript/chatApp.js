@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let form = document.getElementById('generation-form');
   let messagesList = document.getElementById('messages-list');
   let newThreadBtn = document.getElementById('new-thread-btn');
+  let showThreadBtn = document.getElementById('show-thread-btn');
 
   function handleFormSubmit(e) {
     e.preventDefault();
@@ -55,6 +56,15 @@ document.addEventListener('DOMContentLoaded', function() {
         'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
       }
     })
+  }
+
+  function fetchChatThreads() {
+    fetch('/chat_threads', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
   }
 
   // 各要素を取得
