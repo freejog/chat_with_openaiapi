@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
   let form = document.getElementById('generation-form');
   let messagesList = document.getElementById('messages-list');
   let newThreadBtn = document.getElementById('new-thread-btn');
@@ -64,6 +64,10 @@ document.addEventListener('DOMContentLoaded', function() {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
     });
   }
 
