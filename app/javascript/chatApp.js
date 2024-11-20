@@ -67,7 +67,10 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .then(response => response.json())
     .then(data => {
-      console.log(data);
+      data.chat_threads.forEach(chatThread => {
+        const threadItem = document.createElement('div');
+        threadItem.classList.add('thread-item');
+      });
     });
   }
 
