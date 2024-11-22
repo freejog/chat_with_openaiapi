@@ -72,9 +72,26 @@ document.addEventListener('DOMContentLoaded', () => {
       data.chat_threads.forEach(chatThread => {
         const threadItem = document.createElement('div');
         threadItem.classList.add('thread-item');
+        threadItem.dataset.chatThreadId = chatThread.id;
         threadItem.textContent = chatThread.title;
         threadsList.appendChild(threadItem);
       });
+    });
+  }
+
+  function handleThreadsSelection(e) {
+    if (e.target.classList.contains('thread-item')) {
+      const chatThreadId = event.target.dataset.chatThreadId;
+      fetchAndDisplayThread(chatThreadId);
+    }
+  }
+
+  function fetchAndDisplayThread(chatThreadId) {
+    fetch('/chat_threads/${chatThreadId}', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
     });
   }
 
