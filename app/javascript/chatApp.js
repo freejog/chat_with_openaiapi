@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function handleThreadsSelection(e) {
+  function handleThreadSelection(e) {
     if (e.target.classList.contains('thread-item')) {
       const chatThreadId = event.target.dataset.chatThreadId;
       fetchAndDisplayThread(chatThreadId);
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function fetchAndDisplayThread(chatThreadId) {
-    fetch('/chat_threads/${chatThreadId}', {
+    fetch(`/chat_threads/${chatThreadId}`, {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
