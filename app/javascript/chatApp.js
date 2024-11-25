@@ -92,6 +92,14 @@ document.addEventListener('DOMContentLoaded', () => {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       }
+    })
+    .then(response => response.json())
+    .then(data => {
+      history.pushState(null, '', `/chat_threads/${chatThreadId}`);
+      hideThreadsModal();
+    })
+    .catch(error => {
+      alert('スレッドの読み込みに失敗しました。もう一度お試しください。');
     });
   }
 

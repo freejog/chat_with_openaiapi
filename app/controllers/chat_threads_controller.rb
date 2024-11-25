@@ -13,7 +13,7 @@ class ChatThreadsController < ApplicationController
 
     respond_to do |format|
       format.json { render json: { chat_thread: @chat_thread } }
-      format.json { render 'messages/index' }
+      format.html { render 'messages/index' }
     end
   end
 end
