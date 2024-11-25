@@ -9,6 +9,11 @@ class ChatThreadsController < ApplicationController
   end
 
   def show
-    binding.pry
+    @chat_thread = ChatThread.find(params[:id])
+
+    respond_to do |format|
+      format.json { render json: { chat_thread: @chat_thread } }
+      format.json { render 'messages/index' }
+    end
   end
 end
