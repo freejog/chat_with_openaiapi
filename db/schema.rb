@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_19_115404) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_25_035153) do
   create_table "chat_threads", charset: "utf8mb4", force: :cascade do |t|
     t.text "title"
     t.datetime "created_at", null: false
