@@ -35,15 +35,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function sendPrompt(formData, token, targetElement) {
     fetch(form.action, {
       method: 'POST',
+      body: formData,
       headers:{
-        'Accept' : 'application/json',
+        'Accept': 'application/json',
         'X-CSRF-Token': token
-      },
-      body: formData
+      }
     })
     .then(response => response.json())
     .then(data => {
       displayResponse(data.response, targetElement);
+      if (data.thread_title) {
+        updateThreadTitleDisplay(data.thread_title);
+      }
     })
     .catch(error => handleAPIError(error, targetElement));
   }

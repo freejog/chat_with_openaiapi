@@ -12,6 +12,11 @@ class MessagesController < ApplicationController
       response_body = JSON.parse(response.body) #JSON→Rubyにパース
       @message.response = response_body['choices'][0]['message']['content']
 
+      if @chat_thread.messages.count == 0
+        generated_title = generate_title(@message.prompt)
+        @chat_thread.update(title: generated_title)
+      end
+
       if @message.save
         render json: { response: @message.response }
       else
@@ -42,5 +47,18 @@ class MessagesController < ApplicationController
         max_tokens: 100
       }
     )
+  end
+
+  def generate_title(content)
+    title_prompt = "以下の会話の開始プロンプトから、この会話スレッドの内容を予測し、5単語以内の簡潔なタイトルを生成してください。タイトルは今後の会話も含めてスレッドの内容を想像できるものにしてください。\n\nプロンプト: #{content}\n\nタイトル:"
+
+    openai_api_call(title_prompt)
+    if response.status.success?
+      response_body = JSON.parse(response.body.to_s)
+      generated_title = response_body['choices'][0]['message']['content'].strip
+      return generated_title
+    else
+      return "新しい会話スレッド"
+    end
   end
 end
