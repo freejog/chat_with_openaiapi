@@ -10,7 +10,6 @@ class ChatThreadsController < ApplicationController
 
   def create
     @chat_thread = ChatThread.create(title: 'Untitled')
-
     if @chat_thread.persisted?
       render json: { chat_thread: @chat_thread }, status: :created
     else
@@ -23,7 +22,12 @@ class ChatThreadsController < ApplicationController
     @message = @chat_thread.messages.build
 
     respond_to do |format|
-      format.json { render json: { chat_thread: @chat_thread } }
+      format.json { 
+        render json: {
+          chat_thread: @chat_thread,
+          messages: @chat_thread.messages.order(created_at: :asc)
+        }
+      }
       format.html { render :index }
     end
   end

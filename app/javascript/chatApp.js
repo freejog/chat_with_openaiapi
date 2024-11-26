@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(data => {
       history.pushState(null, '', `/chat_threads/${chatThreadId}`);
       hideThreadsModal();
-      updateChatInterface(data.chat_thread, []);
+      updateChatInterface(data.chat_thread, data.messages);
     })
     .catch(error => {
       alert('スレッドの読み込みに失敗しました。もう一度お試しください。');
