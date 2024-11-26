@@ -1,15 +1,13 @@
 require 'http'
 
 class MessagesController < ApplicationController
-
   def create
     @chat_thread = ChatThread.find(params[:chat_thread_id])
-    @message = @chat_thread.messages.build(message_params)
-
+    @message = @chat_thread.messages.build(message_params)    
     response = openai_api_call(@message.prompt)
 
     if response.status.success?
-      response_body = JSON.parse(response.body) #JSON→Rubyにパース
+      response_body = JSON.parse(response.body)
       @message.response = response_body['choices'][0]['message']['content']
 
       if @chat_thread.messages.count == 0
@@ -18,7 +16,10 @@ class MessagesController < ApplicationController
       end
 
       if @message.save
-        render json: { response: @message.response }
+        render json: {
+          response: @message.response,
+          thread_title: @chat_thread.title
+        }
       else
         render json: { error: @message.errors.full_messages.join(', ') }, status: :unprocessable_entity
       end
@@ -43,8 +44,7 @@ class MessagesController < ApplicationController
       },
       json: {
         model: "gpt-4o-mini",
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 100
+        messages: [{ role: "user", content: prompt }]
       }
     )
   end
@@ -52,7 +52,7 @@ class MessagesController < ApplicationController
   def generate_title(content)
     title_prompt = "以下の会話の開始プロンプトから、この会話スレッドの内容を予測し、5単語以内の簡潔なタイトルを生成してください。タイトルは今後の会話も含めてスレッドの内容を想像できるものにしてください。\n\nプロンプト: #{content}\n\nタイトル:"
 
-    openai_api_call(title_prompt)
+    response = openai_api_call(title_prompt)
     if response.status.success?
       response_body = JSON.parse(response.body.to_s)
       generated_title = response_body['choices'][0]['message']['content'].strip
