@@ -3,7 +3,9 @@ require 'http'
 class MessagesController < ApplicationController
 
   def create
-    @message = Message.new(message_params)
+    @chat_thread = ChatThread.find(params[:chat_thread_id])
+    @message = @chat_thread.messages.build(message_params)
+
     response = openai_api_call(@message.prompt)
 
     if response.status.success?
