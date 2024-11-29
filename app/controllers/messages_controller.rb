@@ -4,6 +4,10 @@ class MessagesController < ApplicationController
   def create
     @chat_thread = ChatThread.find(params[:chat_thread_id])
     @message = @chat_thread.messages.build(message_params)    
+
+    context = @chat_thread.context || ""
+    full_prompt = context + "\n" + @message.prompt
+
     response = openai_api_call(@message.prompt)
 
     if response.status.success?
@@ -16,6 +20,9 @@ class MessagesController < ApplicationController
       end
 
       if @message.save
+        new_context = context + "\n" + @message.prompt + "\n" + @message.response
+        @chat_thread.update(context: new_context.last(1500))
+
         render json: {
           response: @message.response,
           thread_title: @chat_thread.title

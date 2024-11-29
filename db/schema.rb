@@ -10,11 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_26_143623) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_29_131046) do
   create_table "chat_threads", charset: "utf8mb4", force: :cascade do |t|
     t.text "title"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "context"
   end
 
   create_table "messages", charset: "utf8mb4", force: :cascade do |t|
