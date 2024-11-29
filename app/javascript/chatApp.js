@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let messagesList = document.getElementById('messages-list');
   let newThreadBtn = document.getElementById('new-thread-btn');
   let showThreadBtn = document.getElementById('show-thread-btn');
+  let threadsList = document.getElementById('threads-list');
 
   function handleFormSubmit(e) {
     e.preventDefault();
@@ -34,15 +35,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function sendPrompt(formData, token, targetElement) {
     fetch(form.action, {
       method: 'POST',
+      body: formData,
       headers:{
-        'Accept' : 'application/json',
+        'Accept': 'application/json',
         'X-CSRF-Token': token
-      },
-      body: formData
+      }
     })
     .then(response => response.json())
     .then(data => {
       displayResponse(data.response, targetElement);
+      if (data.thread_title) {
+        updateThreadTitleDisplay(data.thread_title);
+      }
     })
     .catch(error => handleAPIError(error, targetElement));
   }
@@ -56,6 +60,16 @@ document.addEventListener('DOMContentLoaded', () => {
         'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
       }
     })
+    .then(response => response.json())
+    .then(data => {
+      if (data.chat_thread) {
+        history.pushState(null, '', `/chat_threads/${data.chat_thread.id}`);
+        updateChatInterface(data.chat_thread, []);
+      } else {
+        console.error('新規スレッドの作成に失敗しました', data.errors);
+      }
+    })
+    .catch(error => console.error('新規スレッドの作成に失敗しました', error));
   }
 
   function fetchChatThreads() {
@@ -67,7 +81,38 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .then(response => response.json())
     .then(data => {
-      console.log(data);
+      data.chat_threads.forEach(chatThread => {
+        const threadItem = document.createElement('div');
+        threadItem.classList.add('thread-item');
+        threadItem.dataset.chatThreadId = chatThread.id;
+        threadItem.textContent = chatThread.title;
+        threadsList.appendChild(threadItem);
+      });
+    });
+  }
+
+  function handleThreadSelection(e) {
+    if (e.target.classList.contains('thread-item')) {
+      const chatThreadId = event.target.dataset.chatThreadId;
+      fetchAndDisplayThread(chatThreadId);
+    }
+  }
+
+  function fetchAndDisplayThread(chatThreadId) {
+    fetch(`/chat_threads/${chatThreadId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      history.pushState(null, '', `/chat_threads/${chatThreadId}`);
+      hideThreadsModal();
+      updateChatInterface(data.chat_thread, data.messages);
+    })
+    .catch(error => {
+      alert('スレッドの読み込みに失敗しました。もう一度お試しください。');
     });
   }
 
